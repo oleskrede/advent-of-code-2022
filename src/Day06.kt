@@ -1,9 +1,9 @@
 fun main() {
 
-fun messageStartIndex(input: String, markerSize: Int): Int {
-    return input.windowed(markerSize)
-        .indexOfFirst { it.toSet().size == markerSize } + markerSize
-}
+    fun messageStartIndex(input: String, markerSize: Int): Int {
+        return input.windowed(markerSize)
+            .indexOfFirst { it.toSet().size == markerSize } + markerSize
+    }
 
 
     fun part1(input: String): Int {

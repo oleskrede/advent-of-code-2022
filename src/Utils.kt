@@ -1,7 +1,8 @@
 import java.io.File
 import java.math.BigInteger
 import java.security.MessageDigest
-import kotlin.contracts.contract
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 /**
  * Reads lines from the given input txt file.
@@ -22,4 +23,13 @@ fun test(actual: Any, expected: Any) {
     } else{
         throw IllegalStateException("Expected <$expected>, but got <$actual>")
     }
+}
+
+@OptIn(ExperimentalTime::class)
+fun timedRun(block: () -> Any) {
+    var result: Any?
+    val time = measureTime {
+        result = block()
+    }
+    println("Result <$result> found in ${time.inWholeMilliseconds}ms")
 }
