@@ -8,14 +8,25 @@ fun main() {
         return dirsWithSizeBelowMax.sumOf { it.size }
     }
 
-    fun part2(input: List<String>): Int {
-        return 0
+    fun part2(input: List<String>): Long {
+        val totalDiskSize = 70_000_000L
+        val requiredUnusedSize = 30_000_000L
+        val fs = FileSystem()
+        fs.recreateFromBrowsingHistory(input)
+
+        val diskSizeUsed = fs.root.size
+        val unusedDiskSize = totalDiskSize - diskSizeUsed
+        val missingSpace = requiredUnusedSize - unusedDiskSize
+
+        val deletionCandidates = fs.findDirs { it.size >= missingSpace }
+        val smallestDeletionCandidate = deletionCandidates.minBy { it.size }
+        return smallestDeletionCandidate.size
     }
 
     // test if implementation meets criteria from the description, like:
     val testInput = readInput("Day07_test")
     test(part1(testInput), 95437L)
-    test(part2(testInput), 0)
+    test(part2(testInput), 24933642L)
 
     val input = readInput("Day07")
     timedRun { part1(input) }
@@ -24,7 +35,7 @@ fun main() {
 
 private class FileSystem {
 
-    private val root = Directory("/", null)
+    val root = Directory("/", null)
     private var currentDirectory = root
 
     fun recreateFromBrowsingHistory(history: List<String>) {
@@ -35,7 +46,7 @@ private class FileSystem {
                     if (tokens[1] == "cd") {
                         this.changeDirectory(tokens[2])
                     }
-                    // we can ignore $ ls. Either we change directory or we parse the result of $ ls
+                    // we can ignore $ ls. Either we change directory or we are parsing the result of $ ls
                 }
 
                 "dir" -> this.makeDirectory(tokens[1])
