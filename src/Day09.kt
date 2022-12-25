@@ -16,32 +16,40 @@ fun main() {
         return max(dx, dy) <= 1
     }
 
-    fun part1(input: List<String>): Int {
-        var head = Position(0, 0)
-        var tail = Position(0, 0)
-        val tailPositions = mutableSetOf(tail)
+    fun simulateRope(ropeSize: Int, input: List<String>): Int {
+        val knots = MutableList(ropeSize) { Position(0, 0) }
+        val tailPositions = mutableSetOf(knots.last())
         for (headMotion in input) {
             val tokens = headMotion.trim().split(" ")
             val headDir = toDirection[tokens.first()]!!
             val headDist = tokens[1].toInt()
-            head = Position(head.x + headDist * headDir.dx, head.y + headDist * headDir.dy)
 
-            while (!isTouching(head, tail)) {
-                // Find and normalize direction from tail to head
-                var dx = head.x - tail.x
-                var dy = head.y - tail.y
-                dx /= max(1, abs(dx))
-                dy /= max(1, abs(dy))
-
-                tail = Position(tail.x + dx, tail.y + dy)
-                tailPositions.add(tail)
+            for (headStep in 0 until headDist) {
+                knots[0] = Position(knots[0].x + headDir.dx, knots[0].y + headDir.dy)
+                for (i in 1 until knots.size) {
+                    val prevKnot = knots[i - 1]
+                    val knot = knots[i]
+                    if (!isTouching(prevKnot, knot)) {
+                        // Find and normalize direction from knot to prevKnot
+                        var dx = prevKnot.x - knot.x
+                        var dy = prevKnot.y - knot.y
+                        dx /= max(1, abs(dx))
+                        dy /= max(1, abs(dy))
+                        knots[i] = Position(knot.x + dx, knot.y + dy)
+                    }
+                }
+                tailPositions.add(knots.last())
             }
         }
         return tailPositions.size
     }
 
+    fun part1(input: List<String>): Int {
+        return simulateRope(2, input)
+    }
+
     fun part2(input: List<String>): Int {
-        return 1
+        return simulateRope(10, input)
     }
 
     val testInput = readInput("Day09_test")
