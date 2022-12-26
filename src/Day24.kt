@@ -1,6 +1,3 @@
-import kotlin.math.abs
-import kotlin.math.max
-
 fun main() {
 
     fun part1(input: List<String>): Int {
